@@ -1,24 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { SelectProps } from "antd/es/select";
+import Cascader,{ICascaderItem} from "./component/Cascader/Cascader";
+import {data} from "./data";
+import "./App.css";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Cascader
+        {...{
+          data: data as ICascaderItem[],
+          checked: ["jinrong"],
+          okCallback: (val:string[]) => {
+            console.log("选中的值", val);
+          },
+        }}
+      />
     </div>
   );
 }

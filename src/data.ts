@@ -1,0 +1,73 @@
+export const data = [
+  {
+    label: "金融",
+    value: "jinrong",
+    children: [
+      {
+        label: "金融1",
+        value: "jinrong1",
+        children: [
+          {
+            label: "金融11",
+            value: "jinrong11",
+            children: [],
+          },
+          {
+            label: "金融12",
+            value: "jinrong12",
+            children: [],
+          },
+        ],
+      },
+      {
+        label: "金融2",
+        value: "jinrong2",
+        children: [],
+      },
+    ],
+  },
+
+  {
+    label: "生活",
+    value: "shenghuo",
+    children: [
+      {
+        label: "生活1",
+        value: "shenghuo1",
+        children: [
+          {
+            label: "生活11",
+            value: "shenghuo11",
+            children: [],
+          },
+          {
+            label: "生活12",
+            value: "shenghuo12",
+            children: [],
+          },
+        ],
+      },
+      {
+        label: "生活2",
+        value: "shenghuo2",
+        children: [],
+      },
+    ],
+  },
+  {
+    label: "生活a",
+    value: "shenghuoa",
+  },
+  {
+    label: "生活b",
+    value: "shenghuob",
+  },
+  {
+    label: "生活c",
+    value: "shenghuoc",
+  },
+  {
+    label: "生活d",
+    value: "shenghuod",
+  },
+];
