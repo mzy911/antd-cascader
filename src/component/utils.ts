@@ -1,4 +1,4 @@
-import {ICascaderItem} from './Cascader/Cascader'
+import { ICascaderItem } from "./Cascader/Cascader";
 
 // // 显示下一级
 // export function showNextLevel(data, key = "id", activeId) {
@@ -30,19 +30,15 @@ import {ICascaderItem} from './Cascader/Cascader'
 //   return arr;
 // }
 
-
-// 元素添加 id
-export function addId(data:ICascaderItem[], id:string = "abcd") {
-  let newData = JSON.parse(JSON.stringify(data));
-  data = newData.map((item, index) => {
-    const newItem = { ...item, id: id + index };
-    if (item?.children?.length > 0) {
-      newItem.children = addId(item.children, id + index);
+// 元素添加 key, TreeSelect 的数据结构要求
+export function addKey(data: ICascaderItem[]) {
+  return data.map((item, index) => {
+    const newItem = { ...item, key: item.value };
+    if (item?.children && item?.children?.length > 0) {
+      newItem.children = addKey(item.children);
     }
     return newItem;
   });
-
-  return newData;
 }
 
 // // 元素设置active
@@ -104,6 +100,32 @@ export function addId(data:ICascaderItem[], id:string = "abcd") {
 //   return newData;
 // }
 
+// 手动删除
+export function delFromFatherToSon(
+  data: ICascaderItem[],
+  keys: string[],
+  key: string
+): string[] {
+  let resKeys: string[] = JSON.parse(JSON.stringify(keys));
+  function find(nodes: ICascaderItem[], del?: boolean) {
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      const same = node.key === key;
+      if (same && !del) {
+        resKeys = resKeys.filter((keyItem) => keyItem !== key);
+      }
+      if (del) {
+        resKeys = resKeys.filter((keyItem) => keyItem !== node.key);
+      }
+      if (node?.children && node?.children?.length > 0) {
+        find(node.children, same || del);
+      }
+    }
+  }
+  find(data);
+
+  return resKeys;
+}
 
 // // 手动删除
 // export function setDelete(data, father) {
@@ -127,5 +149,3 @@ export function addId(data:ICascaderItem[], id:string = "abcd") {
 
 //   return newData;
 // }
-
-

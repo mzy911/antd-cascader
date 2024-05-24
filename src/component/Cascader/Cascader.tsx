@@ -1,50 +1,52 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Select } from "antd";
-import { SelectProps } from "antd/es/select";
+import React, { useState } from "react";
+import { TreeSelect } from "antd";
 import { Tooltip, Tag } from "antd";
 // import SelectTree from "./SelectTree";
-import { addId } from "../utils";
-import "./Cascader.less";
+import { addKey, delFromFatherToSon } from "../utils";
 
-export interface ICascaderItem{
+// import "./Cascader.less";
+
+export interface ICascaderItem {
   label: string;
   value: string;
-  id: string;
+  key: string;
   checked?: Boolean;
   active?: Boolean;
   children?: ICascaderItem[];
 }
 
 interface IProps {
-  data: ICascaderItem[] ;
+  data: ICascaderItem[];
   checked: string[];
   okCallback: (string: []) => void;
 }
 
 const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
-
-
   // 勾选集合
   const [selected, setSeleced] = useState<string[]>(initValue);
   // 下拉框
-  const [showSelect, setShowSelect] = useState(false);
+  // const [showSelect, setShowSelect] = useState(false);
 
-  const [renderData, setRenderData] = useState(addId(JSON.parse(JSON.stringify(data)), 'abcd'))
+  const [renderData] = useState(addKey(JSON.parse(JSON.stringify(data))));
+
+  console.log("renderData", renderData);
 
   // 原始数据
-  // const 
+  // const
 
-  // const dealData = JSON.parse(JSON.stringify(addId(data.data, "abcd")));
+  // const dealData = JSON.parse(JSON.stringify(addKey(data.data, "abcd")));
 
   // const myRef = useRef(null);
 
-  const handleChange = (value: string[]) => {
-    setSeleced(value);
-  };
+  // const handleChange = (value: string[]) => {
+  //   setSeleced(value);
+  // };
 
   const deleteTag = (val: string) => () => {
-    console.log("delete", val, selected);
-    setSeleced(selected.filter((select) => select !== val));
+    const aa = delFromFatherToSon(renderData, selected, val);
+    console.log("aa", val, aa);
+
+    setSeleced(aa);
   };
 
   // const handleClickOutside = (event) => {
@@ -73,7 +75,66 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
       className="select-tree-container"
       style={{ marginTop: "50px", marginLeft: "50px" }}
     >
-      <Select
+      <TreeSelect
+        {...{
+          treeData: renderData,
+          // value: selected,
+          defaultValue: selected,
+          treeNodeLabelProp: "label",
+          treeCheckable: true,
+          style: {
+            width: "200px",
+          },
+          maxTagCount: 1,
+          // treeCheckStrictly: true, // 子选项不受父亲影响
+          // open: false,
+          // onChange: (values) => {
+          //   console.log("当前", values);
+          // },
+          maxTagPlaceholder: (checkedData) => {
+            console.log("checkedData", checkedData);
+
+            const len = checkedData.length;
+            const tabs = (
+              <>
+                {checkedData.map((item) => {
+                  return (
+                    <Tag
+                      {...{
+                        key: item.key,
+                        closable: true,
+                        onClick: (aa) => {
+                          console.log(111111, aa);
+                          // deleteTag(item.key as string);
+                        },
+                        // onClose: (aa) => {
+                        //   console.log(111111, aa);
+                        //   // deleteTag(item.key as string);
+                        // },
+                      }}
+                    >
+                      {item.label}{" "}
+                    </Tag>
+                  );
+                })}
+              </>
+            );
+
+            return (
+              <Tooltip
+                overlayClassName="abcdefc"
+                placement="topLeft"
+                title={tabs}
+              >
+                <span className="ant-select-selection-item-content">
+                  + {len} ...
+                </span>
+              </Tooltip>
+            );
+          },
+        }}
+      />
+      {/* <Select
         mode="multiple"
         autoClearSearchValue={true}
         style={{ width: "200px" }}
@@ -86,37 +147,11 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
         }}
         maxTagCount={1}
         showSearch={true}
-        open={false}
-        options={data as {label:string; value:string}[]}
-        // maxTagPlaceholder={(a) => {
-        //   const label = a?.[0]?.label;
-        //   const tabs =
-        //     selected.length > 2 ? (
-        //       <div>
-        //         {selected
-        //           .filter((_item, index) => index > 1)
-        //           .map((item) => {
-        //             return (
-        //               <Tag key={item} closable onClose={deleteTag(item)}>
-        //                 {item}{" "}
-        //               </Tag>
-        //             );
-        //           })}
-        //       </div>
-        //     ) : null;
-
-        //   return (
-        //     <Tooltip overlayClassName="abcdefc" placement="topLeft" title={tabs}>
-        //       <span className="ant-select-selection-item-content">
-        //         +{label}...
-        //       </span>
-        //     </Tooltip>
-        //   );
-        // }}
-      />
-
+        // open={false}
+        options={data as { label: string; value: string }[]}
+        
+      /> */}
       <br />
-
       {/* {showSelect ? (
         <div className="select-tree-warp" ref={myRef}>
           <SelectTree
