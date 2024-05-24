@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React, { useState ,useRef} from "react";
 import { TreeSelect } from "antd";
 import { Tooltip, Tag } from "antd";
-// import SelectTree from "./SelectTree";
+import SelectTree from "./SelectTree";
 import { addKey, delFromFatherToSon } from "../utils";
-
-// import "./Cascader.less";
+import "./Cascader.less";
 
 export interface ICascaderItem {
-  label: string;
+  title: string;
   value: string;
   key: string;
   checked?: Boolean;
@@ -21,32 +20,35 @@ interface IProps {
   okCallback: (string: []) => void;
 }
 
+interface ISelectItem {
+  value: string;
+  label: string;
+}
+
 const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
   // 勾选集合
   const [selected, setSeleced] = useState<string[]>(initValue);
   // 下拉框
-  // const [showSelect, setShowSelect] = useState(false);
+  const [showSelect, setShowSelect] = useState(false);
 
   const [renderData] = useState(addKey(JSON.parse(JSON.stringify(data))));
 
-  console.log("renderData", renderData);
+  console.log("selected", selected);
 
   // 原始数据
   // const
 
   // const dealData = JSON.parse(JSON.stringify(addKey(data.data, "abcd")));
 
-  // const myRef = useRef(null);
+  const myRef = useRef(null);
 
   // const handleChange = (value: string[]) => {
   //   setSeleced(value);
   // };
 
   const deleteTag = (val: string) => () => {
-    const aa = delFromFatherToSon(renderData, selected, val);
-    console.log("aa", val, aa);
-
-    setSeleced(aa);
+    const resTags = delFromFatherToSon(renderData, selected, val);
+    setSeleced(resTags);
   };
 
   // const handleClickOutside = (event) => {
@@ -70,6 +72,10 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
   //   };
   // }, []);
 
+  const handleClose = () => {
+    console.log("ww");
+  };
+
   return (
     <div
       className="select-tree-container"
@@ -78,46 +84,36 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
       <TreeSelect
         {...{
           treeData: renderData,
-          // value: selected,
-          defaultValue: selected,
-          treeNodeLabelProp: "label",
+          value: selected,
+          // defaultValue: selected,
           treeCheckable: true,
           style: {
             width: "200px",
           },
           maxTagCount: 1,
-          // treeCheckStrictly: true, // 子选项不受父亲影响
-          // open: false,
-          // onChange: (values) => {
-          //   console.log("当前", values);
-          // },
+          treeCheckStrictly: true, // 子选项不受父亲影响
+          open: false,
+          onChange: () => {
+            const value = selected[0];
+            value && deleteTag(value)();
+          },
+          onFocus:()=>{setShowSelect(true)},
           maxTagPlaceholder: (checkedData) => {
-            console.log("checkedData", checkedData);
-
             const len = checkedData.length;
             const tabs = (
-              <>
+              <div>
                 {checkedData.map((item) => {
                   return (
                     <Tag
-                      {...{
-                        key: item.key,
-                        closable: true,
-                        onClick: (aa) => {
-                          console.log(111111, aa);
-                          // deleteTag(item.key as string);
-                        },
-                        // onClose: (aa) => {
-                        //   console.log(111111, aa);
-                        //   // deleteTag(item.key as string);
-                        // },
-                      }}
+                      key={item.key}
+                      onClose={deleteTag(item.key as string)}
+                      closable={true}
                     >
                       {item.label}{" "}
                     </Tag>
                   );
                 })}
-              </>
+              </div>
             );
 
             return (
@@ -134,38 +130,20 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
           },
         }}
       />
-      {/* <Select
-        mode="multiple"
-        autoClearSearchValue={true}
-        style={{ width: "200px" }}
-        placeholder="Please select"
-        defaultValue={initValue}
-        value={selected}
-        onChange={handleChange}
-        onClick={() => {
-          setShowSelect(true);
-        }}
-        maxTagCount={1}
-        showSearch={true}
-        // open={false}
-        options={data as { label: string; value: string }[]}
-        
-      /> */}
       <br />
-      {/* {showSelect ? (
+      {showSelect ? (
         <div className="select-tree-warp" ref={myRef}>
           <SelectTree
-            data={dealData}
+            data={renderData}
             value={selected}
-            onChange={setSeleced}
+            onChange={deleteTag}
           />
-
-          <div style={{ border: "1px solid #ddd" }}>
+          {/* <div style={{ border: "1px solid #ddd" }}>
             <button type="">确定</button>
             <button type=""> 取消</button>
-          </div>
+          </div> */}
         </div>
-      ) : null} */}
+      ) : null}
     </div>
   );
 };

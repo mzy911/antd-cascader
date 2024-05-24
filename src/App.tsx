@@ -9,7 +9,7 @@ function App() {
       <Cascader
         {...{
           data: data as ICascaderItem[],
-          checked: ["jinrong", "shenghuo", "shenghuoa", "shenghuob"],
+          checked: ["jinrong", "shenghuo","shenghuo1","shenghuo11", "shenghuoa", "shenghuob"],
           okCallback: (val: string[]) => {
             console.log("选中的值", val);
           },
