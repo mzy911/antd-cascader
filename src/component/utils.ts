@@ -5,7 +5,7 @@ import { IRenderDataItem } from "./Cascader/SelectTree";
 export function showNextLevel(
   data: IRenderDataItem[],
   activeId: string | undefined
-):IRenderDataItem[][] {
+): IRenderDataItem[][] {
   let newData: IRenderDataItem[] = JSON.parse(JSON.stringify(data));
 
   let arr: IRenderDataItem[][] = [];
@@ -45,19 +45,39 @@ export function addKey(data: ICascaderItem[]) {
   });
 }
 
-// // 元素设置active
-// export function setActivce(data, arr = []) {
-//   let newData = JSON.parse(JSON.stringify(data));
-//   newData = newData.map((item, index) => {
-//     const newItem = { ...item, active: !!arr.includes(item.id) };
-//     if (item.children && item.children.length > 0) {
-//       newItem.children = setActivce(item.children, arr);
-//     }
-//     return newItem;
-//   });
+// 元素设置active
+export function setActivce(data: IRenderDataItem[], key?: string) {
+  if (!key) {
+    return data;
+  }
 
-//   return newData;
-// }
+  let newData: IRenderDataItem[] = JSON.parse(JSON.stringify(data));
+
+  function find(nodes: IRenderDataItem[]): boolean {
+    let findItem = false;
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      if (node.key === key) {
+        node.active = true;
+        findItem = true;
+        return true;
+      } else {
+        node.active = false;
+      }
+
+      if (node.children && node.children.length > 0) {
+        const res = find(node.children);
+        node.active = res;
+        findItem = !!res;
+      }
+    }
+
+    return findItem;
+  }
+  find(newData);
+
+  return newData;
+}
 
 // 设置 checked 状态
 export function setChecked(
@@ -88,29 +108,6 @@ export function setChecked(
   return newData;
 }
 
-// // 设置 disabled 状态
-// export function setDisabled(data, father) {
-//   const newData = JSON.parse(JSON.stringify(data));
-//   function find(nodes, father) {
-//     for (let i = 0; i < nodes.length; i++) {
-//       const node = nodes[i];
-//       if (node?.children?.length > 0) {
-//         if (father) {
-//           node.disabled = !father.checked;
-//         }
-//         find(node.children, node);
-//       } else {
-//         if (father) {
-//           node.disabled = !father.checked;
-//         }
-//       }
-//     }
-//   }
-//   find(newData, null);
-
-//   return newData;
-// }
-
 // 手动删除
 export function delFromFatherToSon(
   data: ICascaderItem[],
@@ -137,26 +134,3 @@ export function delFromFatherToSon(
 
   return resKeys;
 }
-
-// // 手动删除
-// export function setDelete(data, father) {
-//   const newData = JSON.parse(JSON.stringify(data));
-//   function find(nodes, father) {
-//     for (let i = 0; i < nodes.length; i++) {
-//       const node = nodes[i];
-//       if (node?.children?.length > 0) {
-//         if (father) {
-//           node.disabled = !father.checked;
-//         }
-//         find(node.children, node);
-//       } else {
-//         if (father) {
-//           node.disabled = !father.checked;
-//         }
-//       }
-//     }
-//   }
-//   find(newData, null);
-
-//   return newData;
-// }

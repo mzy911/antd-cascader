@@ -1,5 +1,5 @@
-import React, { useState ,useRef} from "react";
-import { TreeSelect } from "antd";
+import React, { useState, useRef, useEffect, RefObject } from "react";
+import { TreeSelect, Button } from "antd";
 import { Tooltip, Tag } from "antd";
 import SelectTree from "./SelectTree";
 import { addKey, delFromFatherToSon } from "../utils";
@@ -17,64 +17,54 @@ export interface ICascaderItem {
 interface IProps {
   data: ICascaderItem[];
   checked: string[];
-  okCallback: (string: []) => void;
+  okCallback: (values: string[]) => void;
 }
-
-interface ISelectItem {
-  value: string;
-  label: string;
-}
-
 const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
   // 勾选集合
   const [selected, setSeleced] = useState<string[]>(initValue);
   // 下拉框
   const [showSelect, setShowSelect] = useState(false);
-
   const [renderData] = useState(addKey(JSON.parse(JSON.stringify(data))));
+  const myRef: RefObject<HTMLDivElement> = useRef(null);
 
-  console.log("selected", selected);
-
-  // 原始数据
-  // const
-
-  // const dealData = JSON.parse(JSON.stringify(addKey(data.data, "abcd")));
-
-  const myRef = useRef(null);
-
-  // const handleChange = (value: string[]) => {
-  //   setSeleced(value);
-  // };
-
-  const deleteTag = (val: string) => () => {
-    const resTags = delFromFatherToSon(renderData, selected, val);
-    setSeleced(resTags);
+  const deleteTag = (val: string, vals?: string[]) => () => {
+    if (vals) {
+      setSeleced(vals);
+    } else {
+      const resTags = delFromFatherToSon(renderData, selected, val);
+      setSeleced(resTags);
+    }
   };
 
-  // const handleClickOutside = (event) => {
-  //   const antTooltip = document.querySelector(".abcdefc");
-  //   if (
-  //     !myRef.current?.contains?.(event.target) &&
-  //     !antTooltip?.contains?.(event.target)
-  //   ) {
-  //     // 点击弹窗外部
-  //     setShowSelect(false);
-  //   }
-  // };
+  const handleClickOutside = (event: any) => {
+    // 点击 Tooltip
+    const antTooltip = document.querySelector(".myselef-tool-tip");
+    // 点击 TreeSelect
+    const myselefTree = document.querySelector(".myselef-tree-select");
 
-  // useEffect(() => {
-  //   // 在组件挂载时添加事件监听器
-  //   document.addEventListener("click", handleClickOutside, true);
+    if (
+      showSelect &&
+      !myRef.current?.contains?.(event.target) &&
+      !antTooltip?.contains?.(event.target) &&
+      !myselefTree?.contains?.(event.target)
+    ) {
+      console.log("aa");
 
-  //   return () => {
-  //     // 在组件卸载时移除事件监听器
-  //     document.removeEventListener("click", handleClickOutside, true);
-  //   };
-  // }, []);
-
-  const handleClose = () => {
-    console.log("ww");
+      // 点击弹窗外部
+      setSeleced(initValue);
+      setShowSelect(false);
+    }
   };
+
+  useEffect(() => {
+    // 在组件挂载时添加事件监听器
+    document.addEventListener("click", handleClickOutside, true);
+
+    return () => {
+      // 在组件卸载时移除事件监听器
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  }, []);
 
   return (
     <div
@@ -83,21 +73,23 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
     >
       <TreeSelect
         {...{
+          className: "myselef-tree-select",
           treeData: renderData,
           value: selected,
-          // defaultValue: selected,
           treeCheckable: true,
           style: {
             width: "200px",
           },
           maxTagCount: 1,
-          treeCheckStrictly: true, // 子选项不受父亲影响
+          treeCheckStrictly: true,
           open: false,
           onChange: () => {
             const value = selected[0];
             value && deleteTag(value)();
           },
-          onFocus:()=>{setShowSelect(true)},
+          onFocus: () => {
+            setShowSelect(true);
+          },
           maxTagPlaceholder: (checkedData) => {
             const len = checkedData.length;
             const tabs = (
@@ -118,7 +110,7 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
 
             return (
               <Tooltip
-                overlayClassName="abcdefc"
+                overlayClassName="myselef-tool-tip"
                 placement="topLeft"
                 title={tabs}
               >
@@ -133,15 +125,30 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
       <br />
       {showSelect ? (
         <div className="select-tree-warp" ref={myRef}>
-          <SelectTree
-            data={renderData}
-            value={selected}
-            onChange={deleteTag}
-          />
-          {/* <div style={{ border: "1px solid #ddd" }}>
-            <button type="">确定</button>
-            <button type=""> 取消</button>
-          </div> */}
+          <SelectTree data={renderData} value={selected} onChange={deleteTag} />
+          <div style={{ border: "1px solid #ddd" }}>
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => {
+                setShowSelect(false);
+                okCallback(selected);
+              }}
+            >
+              确定
+            </Button>
+            <Button
+              type="default"
+              size="small"
+              onClick={() => {
+                setShowSelect(false);
+                setSeleced(initValue);
+              }}
+            >
+              {" "}
+              取消
+            </Button>
+          </div>
         </div>
       ) : null}
     </div>

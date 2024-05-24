@@ -1,70 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { Checkbox } from "antd";
+import { RightOutlined } from "@ant-design/icons";
 import {
   showNextLevel,
-  // setActivce,
   setChecked,
-  // setDisabled,
+  setActivce
 } from "../utils";
 import "./SelectTree.less";
-import "./SelectTree.css";
 
 import { ICascaderItem } from "./Cascader";
 
 interface IProps {
   data: ICascaderItem[];
   value: string[];
-  onChange: (key:string) => ()=>void;
+  onChange: (key: string, vals?: string[]) => () => void;
 }
 
 export interface IRenderDataItem extends ICascaderItem {
-  checked?:boolean;
-  active?:boolean;
-  disabled?:boolean;
-  children?:IRenderDataItem[]
+  checked?: boolean;
+  active?: boolean;
+  disabled?: boolean;
+  children?: IRenderDataItem[];
 }
 
-
-const SelectTree = ({data, value, onChange}: IProps) => {
-  const [activeId] = useState();
-  // const [dealData, setDealData] = useState([]);
-
+const SelectTree = ({ data, value, onChange }: IProps) => {
+  const [activeId, setActivceId] = useState<string | undefined>();
   const [renderData, setRenderData] = useState(setChecked(data, value));
   const [acticePaths, setActicePaths] = useState<IRenderDataItem[][]>([]);
 
-  // // console.log("setChecked(data, value)", setChecked(data, value));
-
-  // // console.log('renderData',renderData);
-  const renderTree = (itemData:IRenderDataItem[], index:number) => {
-    // let deep = index;
-    // let indexId = 0;
-    // let id = acticePaths[0] + Date.now() + index;
-    // let disabledData = setDisabled(renderData);
-    // let data = JSON.parse(JSON.stringify(disabledData));
-
-    // // while (deep > 0) {
-    // //   const preId = acticePaths[indexId];
-    // //   const preData = data.find((item) => item.id === preId);
-    // //   indexId++;
-    // //   const nextId = acticePaths[indexId];
-    // //   data = preData.children;
-    // //   id = nextId;
-    // //   deep--;
-    // // }
-
-    // const checkBoxClick = (id) => (e) => {
-    //   if (e.target.nodeName === "INPUT") {
-    //     // 点击勾选按钮：勾选、取消
-    //     if (value.includes(id)) {
-    //       onChange(value.filter((val) => val !== id));
-    //     } else {
-    //       onChange([...value, id]);
-    //     }
-    //   } else {
-    //     // 点击 lable、空白处 展开下级
-    //     setActivceId(id);
-    //   }
-    // };
+  const renderTree = (itemData: IRenderDataItem[], index: number) => {
+    const checkBoxClick = (key: string) => (e: any) => {
+      if (e.target.nodeName === "INPUT") {
+        // 点击勾选按钮：勾选、取消
+        if (value.includes(key)) {
+          onChange(key)();
+        } else {
+          onChange("", [...value, key])();
+        }
+      } else {
+        // 点击 lable、空白处 展开下级
+        setActivceId(key);
+      }
+    };
 
     return (
       <div className={"select-container"} key={"select-container" + index}>
@@ -72,13 +49,16 @@ const SelectTree = ({data, value, onChange}: IProps) => {
           return (
             <div
               className={item.active ? "select-item active" : "select-item"}
-              key={"select-item" + item.key}
-              // onClick={checkBoxClick(item.id)}
+              key={"select-item" + item.key + item.checked}
+              onClick={checkBoxClick(item.key)}
+              style={{ display: "flex", justifyContent: "space-between" }}
             >
               <Checkbox defaultChecked={item.checked} disabled={item.disabled}>
-                <div className={"oopooow"}>{item.title}</div>
+                <div className={"oopooow"}> {item.title}</div>
               </Checkbox>
-              {/* <Icon type="right" /> */}
+              {item.children && item.children.length > 0 ? (
+                <RightOutlined />
+              ) : null}
             </div>
           );
         })}
@@ -87,21 +67,26 @@ const SelectTree = ({data, value, onChange}: IProps) => {
   };
 
   useEffect(() => {
-    const paths = showNextLevel(renderData,activeId);
+
+    const activeData = setActivce(renderData,activeId);
+
+    console.log('activeData',activeData);
+    
+
+    const paths = showNextLevel(activeData, activeId);
+
     setActicePaths(paths);
   }, [activeId, renderData]);
 
-  // useEffect(() => {
-  //   setRenderData(setChecked(data, value))
-  // }, [value]);
+  useEffect(() => {
+    setRenderData(setChecked(data, value));
+  }, [value, data]);
 
   return (
     <div className="select-tree">
-      {
-        acticePaths.map((item, index) => {
-          return renderTree(item, index);
-        })
-      }
+      {acticePaths.map((item, index) => {
+        return renderTree(item, index);
+      })}
     </div>
   );
 };
