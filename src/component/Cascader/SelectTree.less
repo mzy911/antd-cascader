@@ -1,16 +1,19 @@
 .select-tree {
   display: inline-block;
+  box-shadow: 0 3px 6px -4px #0000001f, 0 6px 16px #00000014, 0 9px 28px 8px #0000000d;
   .select-container {
     float: left;
     width: 200px;
     height: 300px;
     overflow-y: scroll;
-    border: 1px solid #ddd;
+    // border: 1px solid #ddd;
     border-right: none;
+    transition: all .3s;
 
     .select-item {
       padding: 6px 15px;
       position: relative;
+      transition: all .3s;
     }
 
     .select-item::before {
@@ -33,6 +36,14 @@
   }
 
   .select-container:last-child {
-    border-right: 1px solid #ddd;
+    // border-right: 1px solid #ddd;
+  }
+
+  .select-btns{
+    // border: 1px solid #ddd;
+    text-align: right;
+    .ant-btn{
+      margin: 8px 12px;
+    }
   }
 }

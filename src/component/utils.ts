@@ -115,10 +115,15 @@ export function delFromFatherToSon(
   key: string
 ): string[] {
   let resKeys: string[] = JSON.parse(JSON.stringify(keys));
+  console.log(data, "rrrrdata");
+  console.log(resKeys, "rrrrkeys");
+
   function find(nodes: ICascaderItem[], del?: boolean) {
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
       const same = node.key === key;
+      console.log(node.key,key, "rrrrkeywww");
+
       if (same && !del) {
         resKeys = resKeys.filter((keyItem) => keyItem !== key);
       }

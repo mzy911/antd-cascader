@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Checkbox } from "antd";
+import { Checkbox, Button } from "antd";
 import { RightOutlined } from "@ant-design/icons";
-import {
-  showNextLevel,
-  setChecked,
-  setActivce
-} from "../utils";
+import { showNextLevel, setChecked, setActivce } from "../utils";
 import "./SelectTree.less";
 
 import { ICascaderItem } from "./Cascader";
@@ -45,11 +41,11 @@ const SelectTree = ({ data, value, onChange }: IProps) => {
 
     return (
       <div className={"select-container"} key={"select-container" + index}>
-        {itemData.map((item) => {
+        {itemData.map((item, i) => {
           return (
             <div
               className={item.active ? "select-item active" : "select-item"}
-              key={"select-item" + item.key + item.checked}
+              key={"select-item" + item.key + item.checked + i}
               onClick={checkBoxClick(item.key)}
               style={{ display: "flex", justifyContent: "space-between" }}
             >
@@ -67,11 +63,9 @@ const SelectTree = ({ data, value, onChange }: IProps) => {
   };
 
   useEffect(() => {
+    const activeData = setActivce(renderData, activeId);
 
-    const activeData = setActivce(renderData,activeId);
-
-    console.log('activeData',activeData);
-    
+    console.log("activeData", activeData);
 
     const paths = showNextLevel(activeData, activeId);
 

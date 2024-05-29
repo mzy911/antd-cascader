@@ -23,7 +23,7 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
   // 勾选集合
   const [selected, setSeleced] = useState<string[]>(initValue);
   // 下拉框
-  const [showSelect, setShowSelect] = useState(false);
+  const [showTree, setShowTree] = useState(false);
   const [renderData] = useState(addKey(JSON.parse(JSON.stringify(data))));
   const myRef: RefObject<HTMLDivElement> = useRef(null);
 
@@ -43,7 +43,7 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
     const myselefTree = document.querySelector(".myselef-tree-select");
 
     if (
-      showSelect &&
+      showTree &&
       !myRef.current?.contains?.(event.target) &&
       !antTooltip?.contains?.(event.target) &&
       !myselefTree?.contains?.(event.target)
@@ -51,8 +51,8 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
       console.log("aa");
 
       // 点击弹窗外部
-      setSeleced(initValue);
-      setShowSelect(false);
+      // setSeleced(initValue);
+      setShowTree(false);
     }
   };
 
@@ -66,6 +66,7 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
     };
   }, []);
 
+
   return (
     <div
       className="select-tree-container"
@@ -78,9 +79,9 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
           value: selected,
           treeCheckable: true,
           style: {
-            width: "200px",
+            width: "360px",
           },
-          maxTagCount: 1,
+          maxTagCount: 3,
           treeCheckStrictly: true,
           open: false,
           onChange: () => {
@@ -88,7 +89,7 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
             value && deleteTag(value)();
           },
           onFocus: () => {
-            setShowSelect(true);
+            setShowTree(true);
           },
           maxTagPlaceholder: (checkedData) => {
             const len = checkedData.length;
@@ -101,7 +102,7 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
                       onClose={deleteTag(item.key as string)}
                       closable={true}
                     >
-                      {item.label}{" "}
+                      {item.label}
                     </Tag>
                   );
                 })}
@@ -122,33 +123,9 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
           },
         }}
       />
-      <br />
-      {showSelect ? (
+      {showTree ? (
         <div className="select-tree-warp" ref={myRef}>
-          <SelectTree data={renderData} value={selected} onChange={deleteTag} />
-          <div style={{ border: "1px solid #ddd" }}>
-            <Button
-              type="primary"
-              size="small"
-              onClick={() => {
-                setShowSelect(false);
-                okCallback(selected);
-              }}
-            >
-              确定
-            </Button>
-            <Button
-              type="default"
-              size="small"
-              onClick={() => {
-                setShowSelect(false);
-                setSeleced(initValue);
-              }}
-            >
-              {" "}
-              取消
-            </Button>
-          </div>
+          <SelectTree data={renderData} value={selected} onChange={deleteTag}/>
         </div>
       ) : null}
     </div>
