@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, RefObject } from "react";
-import { TreeSelect, Button } from "antd";
+import { TreeSelect } from "antd";
 import { Tooltip, Tag } from "antd";
 import SelectTree from "./SelectTree";
 import { addKey, delFromFatherToSon } from "../utils";
@@ -23,7 +23,8 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
   // 勾选集合
   const [selected, setSeleced] = useState<string[]>(initValue);
   // 下拉框
-  const [showTree, setShowTree] = useState(false);
+  const isShow = React.useRef(false);
+  const [, setShowTree] = useState(false);
   const [renderData] = useState(addKey(JSON.parse(JSON.stringify(data))));
   const myRef: RefObject<HTMLDivElement> = useRef(null);
 
@@ -43,15 +44,14 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
     const myselefTree = document.querySelector(".myselef-tree-select");
 
     if (
-      showTree &&
+      isShow.current &&
       !myRef.current?.contains?.(event.target) &&
       !antTooltip?.contains?.(event.target) &&
       !myselefTree?.contains?.(event.target)
     ) {
-      console.log("aa");
-
       // 点击弹窗外部
       // setSeleced(initValue);
+      isShow.current = false;
       setShowTree(false);
     }
   };
@@ -89,6 +89,7 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
             value && deleteTag(value)();
           },
           onFocus: () => {
+            isShow.current = true;
             setShowTree(true);
           },
           maxTagPlaceholder: (checkedData) => {
@@ -123,7 +124,7 @@ const Cascader = ({ data, checked: initValue, okCallback }: IProps) => {
           },
         }}
       />
-      {showTree ? (
+      {isShow.current ? (
         <div className="select-tree-warp" ref={myRef}>
           <SelectTree data={renderData} value={selected} onChange={deleteTag}/>
         </div>
