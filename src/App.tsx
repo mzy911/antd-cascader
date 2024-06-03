@@ -1,24 +1,32 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import Cascader, { ICascaderItem } from "./component/Cascader/Cascader";
 import { data } from "./data";
+import { Modal } from "antd";
 import "./App.css";
+
+function onOk() {
+}
+function onCancel() {
+}
 
 function App() {
 
-  const [checked, setChecked] = useState( ["jinrong", "shenghuo","shenghuo1","shenghuo11", "shenghuoa", "shenghuob"])
   return (
-    <div className="App">
-      <Cascader
-        {...{
-          data: data as ICascaderItem[],
-          checked,
-          okCallback: (val: string[]) => {
-            setChecked(val)
-            console.log("选中的值", val);
-          },
-        }}
-      />
-    </div>
+    <Modal
+      title="Modal"
+      open={true}
+      onOk={onOk}
+      onCancel={onCancel}
+      okText="确认"
+      cancelText="取消"
+    >
+      llllll
+      {/* <iframe
+          src="https://www.baidu.com"  // 替换为另一个系统的页面 URL
+          style={{ width: '100%', height: '100%', border: 'none' }}
+          title="External Page"
+        ></iframe> */}
+    </Modal>
   );
 }
 
