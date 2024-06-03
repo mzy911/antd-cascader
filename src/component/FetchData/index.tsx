@@ -4,7 +4,7 @@ import fetch from "../../utils/fetch";
 
 const FetchData = () => {
   const setPersonInfo = async () => {
-    const info = await fetch.post("/set/persion/info", {
+    const info = await fetch.post("/set/persion/info?size=big", {
       name: "小明",
       age: 12,
     });
